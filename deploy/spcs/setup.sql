@@ -1,0 +1,31 @@
+-- setup.sql — one-time SPCS infrastructure setup for BDC Agent Coaching
+-- Run as ACCOUNTADMIN before the first deploy.
+-- Safe to re-run (all statements use IF NOT EXISTS / OR REPLACE).
+
+USE ROLE ACCOUNTADMIN;
+
+USE DATABASE BDC_DEMO;
+
+CREATE SCHEMA IF NOT EXISTS SPCS;
+USE SCHEMA SPCS;
+
+-- Image repository
+CREATE IMAGE REPOSITORY IF NOT EXISTS BDC_IMAGES;
+
+-- Compute pool
+CREATE COMPUTE POOL IF NOT EXISTS BDC_POOL
+    MIN_NODES = 1
+    MAX_NODES = 1
+    INSTANCE_FAMILY = CPU_X64_S
+    AUTO_SUSPEND_SECS = 3600;
+
+-- Egress network rule (allow outbound HTTPS/HTTP if needed)
+CREATE OR REPLACE NETWORK RULE BDC_EGRESS_RULE
+    MODE = EGRESS
+    TYPE = HOST_PORT
+    VALUE_LIST = ('0.0.0.0:443', '0.0.0.0:80');
+
+-- External access integration
+CREATE OR REPLACE EXTERNAL ACCESS INTEGRATION BDC_EAI
+    ALLOWED_NETWORK_RULES = (BDC_EGRESS_RULE)
+    ENABLED = TRUE;

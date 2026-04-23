@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+backend/.venv/
+frontend/node_modules/
+data/.venv/
+
+# Build outputs
+frontend/dist/
+backend/__pycache__/
+**/__pycache__/
+*.pyc
+*.egg-info/
+
+# Environment / secrets
+deploy/deploy.env
+.env
+.env.local
+*.pem
+*.key
+*.p8
+credentials.json
+**/secrets/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Docker
+*.tar
+
+# Terraform state (observe/)
+observe/.terraform/
+observe/*.tfstate
+observe/*.tfstate.backup
+observe/.terraform.lock.hcl
+
+# Temporary files
+/tmp/
+*.log

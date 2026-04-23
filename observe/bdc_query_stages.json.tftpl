@@ -1,0 +1,271 @@
+[
+  {
+    "id": "stage-bdc-query-latency",
+    "pipeline": "filter (WAREHOUSE_NAME = \"BDC_INTERACTIVE_WH\" or WAREHOUSE_NAME = \"BDC_STD_WH\")\nfilter EXECUTION_STATUS = \"SUCCESS\"\ntimechart options(empty_bins:true), A_TOTAL_ELAPSED_TIME_avg:avg(TOTAL_ELAPSED_TIME), A_TOTAL_ELAPSED_TIME_max:max(TOTAL_ELAPSED_TIME), group_by(WAREHOUSE_NAME)",
+    "input": [
+      {
+        "datasetId": "${query_dataset}",
+        "inputName": "snowflake/QUERY_HISTORY",
+        "inputRole": "Data"
+      }
+    ],
+    "layout": {
+      "type": "stage",
+      "label": "Query Latency by Warehouse (avg=p50, max=p90 proxy, ms)",
+      "steps": [
+        {
+          "action": {
+            "type": "ExpressionBuilder",
+            "params": {
+              "expressionList": {
+                "groupBys": [
+                  {
+                    "id": "WAREHOUSE_NAME",
+                    "column": {
+                      "columnId": "WAREHOUSE_NAME",
+                      "columnType": "STRING",
+                      "inputSource": {
+                        "stageId": "stage-bdc-query-latency",
+                        "datasetId": "${query_dataset}"
+                      }
+                    }
+                  }
+                ],
+                "aggregations": [
+                  {
+                    "id": "A_TOTAL_ELAPSED_TIME_avg",
+                    "column": {
+                      "columnId": "A_TOTAL_ELAPSED_TIME_avg",
+                      "columnType": "FLOAT",
+                      "inputSource": {
+                        "stageId": "stage-bdc-query-latency",
+                        "datasetId": "${query_dataset}"
+                      }
+                    }
+                  },
+                  {
+                    "id": "A_TOTAL_ELAPSED_TIME_max",
+                    "column": {
+                      "columnId": "A_TOTAL_ELAPSED_TIME_max",
+                      "columnType": "FLOAT",
+                      "inputSource": {
+                        "stageId": "stage-bdc-query-latency",
+                        "datasetId": "${query_dataset}"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "managers": [
+        {
+          "type": "VegaChart",
+          "vegaVis": {
+            "x": "_c_valid_from",
+            "y": ["A_TOTAL_ELAPSED_TIME_avg", "A_TOTAL_ELAPSED_TIME_max"],
+            "type": "LineChart",
+            "color": "WAREHOUSE_NAME"
+          }
+        }
+      ],
+      "viewModel": {
+        "stageTab": "vis",
+        "presetView": "none",
+        "rollupDisabled": false
+      }
+    }
+  },
+  {
+    "id": "stage-bdc-query-count-wh",
+    "pipeline": "filter (WAREHOUSE_NAME = \"BDC_INTERACTIVE_WH\" or WAREHOUSE_NAME = \"BDC_STD_WH\")\ntimechart options(empty_bins:true), A_QUERY_ID_count:count(QUERY_ID), group_by(WAREHOUSE_NAME)",
+    "input": [
+      {
+        "datasetId": "${query_dataset}",
+        "inputName": "snowflake/QUERY_HISTORY",
+        "inputRole": "Data"
+      }
+    ],
+    "layout": {
+      "type": "stage",
+      "label": "Query Count by Warehouse",
+      "steps": [
+        {
+          "action": {
+            "type": "ExpressionBuilder",
+            "params": {
+              "expressionList": {
+                "groupBys": [
+                  {
+                    "id": "WAREHOUSE_NAME",
+                    "column": {
+                      "columnId": "WAREHOUSE_NAME",
+                      "columnType": "STRING",
+                      "inputSource": {
+                        "stageId": "stage-bdc-query-count-wh",
+                        "datasetId": "${query_dataset}"
+                      }
+                    }
+                  }
+                ],
+                "aggregations": [
+                  {
+                    "id": "A_QUERY_ID_count",
+                    "column": {
+                      "columnId": "A_QUERY_ID_count",
+                      "columnType": "FLOAT",
+                      "inputSource": {
+                        "stageId": "stage-bdc-query-count-wh",
+                        "datasetId": "${query_dataset}"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "managers": [
+        {
+          "type": "VegaChart",
+          "vegaVis": {
+            "x": "_c_valid_from",
+            "y": ["A_QUERY_ID_count"],
+            "type": "LineChart",
+            "color": "WAREHOUSE_NAME"
+          }
+        }
+      ],
+      "viewModel": {
+        "stageTab": "vis",
+        "presetView": "none",
+        "rollupDisabled": false
+      }
+    }
+  },
+  {
+    "id": "stage-bdc-query-errors",
+    "pipeline": "filter (WAREHOUSE_NAME = \"BDC_INTERACTIVE_WH\" or WAREHOUSE_NAME = \"BDC_STD_WH\")\nfilter EXECUTION_STATUS != \"SUCCESS\"\ntimechart options(empty_bins:true), A_QUERY_ID_count:count(QUERY_ID)",
+    "input": [
+      {
+        "datasetId": "${query_dataset}",
+        "inputName": "snowflake/QUERY_HISTORY",
+        "inputRole": "Data"
+      }
+    ],
+    "layout": {
+      "type": "stage",
+      "label": "Error Query Count",
+      "steps": [
+        {
+          "action": {
+            "type": "ExpressionBuilder",
+            "params": {
+              "expressionList": {
+                "aggregations": [
+                  {
+                    "id": "A_QUERY_ID_count",
+                    "column": {
+                      "columnId": "A_QUERY_ID_count",
+                      "columnType": "FLOAT",
+                      "inputSource": {
+                        "stageId": "stage-bdc-query-errors",
+                        "datasetId": "${query_dataset}"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "managers": [
+        {
+          "type": "VegaChart",
+          "vegaVis": {
+            "x": "_c_valid_from",
+            "y": ["A_QUERY_ID_count"],
+            "type": "LineChart"
+          }
+        }
+      ],
+      "viewModel": {
+        "stageTab": "vis",
+        "presetView": "none",
+        "rollupDisabled": false
+      }
+    }
+  },
+  {
+    "id": "stage-bdc-query-type",
+    "pipeline": "filter (WAREHOUSE_NAME = \"BDC_INTERACTIVE_WH\" or WAREHOUSE_NAME = \"BDC_STD_WH\")\ntimechart options(empty_bins:true), A_QUERY_ID_count:count(QUERY_ID), group_by(QUERY_TYPE)",
+    "input": [
+      {
+        "datasetId": "${query_dataset}",
+        "inputName": "snowflake/QUERY_HISTORY",
+        "inputRole": "Data"
+      }
+    ],
+    "layout": {
+      "type": "stage",
+      "label": "Query Count by Type",
+      "steps": [
+        {
+          "action": {
+            "type": "ExpressionBuilder",
+            "params": {
+              "expressionList": {
+                "groupBys": [
+                  {
+                    "id": "QUERY_TYPE",
+                    "column": {
+                      "columnId": "QUERY_TYPE",
+                      "columnType": "STRING",
+                      "inputSource": {
+                        "stageId": "stage-bdc-query-type",
+                        "datasetId": "${query_dataset}"
+                      }
+                    }
+                  }
+                ],
+                "aggregations": [
+                  {
+                    "id": "A_QUERY_ID_count",
+                    "column": {
+                      "columnId": "A_QUERY_ID_count",
+                      "columnType": "FLOAT",
+                      "inputSource": {
+                        "stageId": "stage-bdc-query-type",
+                        "datasetId": "${query_dataset}"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "managers": [
+        {
+          "type": "VegaChart",
+          "vegaVis": {
+            "x": "_c_valid_from",
+            "y": ["A_QUERY_ID_count"],
+            "type": "LineChart",
+            "color": "QUERY_TYPE"
+          }
+        }
+      ],
+      "viewModel": {
+        "stageTab": "vis",
+        "presetView": "none",
+        "rollupDisabled": false
+      }
+    }
+  }
+]

@@ -1,0 +1,7 @@
+PIPELINE_ID,PIPELINE_NAME,STATUS,DESCRIPTION,LAST_RUN_AT,NEXT_RUN_AT,RECORDS_PROCESSED,ERROR_MESSAGE,CREATED_AT
+PIPE001,call_ingestion,running,Call recordings ingested and transcribed daily,2026-03-30 17:31:41.680877,2026-03-31 17:31:41.680877,10611,,2024-01-01
+PIPE002,ai_enrichment,running,Cortex AI enrichment processing call transcripts,2026-03-30 19:31:41.680902,2026-03-31 19:31:41.680902,5994,,2024-01-01
+PIPE003,score_calculation,running,Agent score calculation from AI enrichments,2026-03-31 07:31:41.680906,2026-04-01 07:31:41.680906,23172,,2024-01-01
+PIPE004,daily_metrics_rollup,running,Agent daily metrics aggregation,2026-03-30 16:31:41.680910,2026-03-31 16:31:41.680910,1159,,2024-01-01
+PIPE005,campaign_assignment,running,Customer-to-campaign assignment logic,2026-03-30 18:31:41.680913,2026-03-31 18:31:41.680913,27252,,2024-01-01
+PIPE006,appointment_sync,warning,Appointment sync from DMS — delay detected,2026-03-30 20:31:41.680916,2026-03-31 20:31:41.680916,15432,DMS sync timeout after 30s — retrying,2024-01-01

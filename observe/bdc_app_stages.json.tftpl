@@ -1,0 +1,189 @@
+[
+  {
+    "id": "stage-bdc-app-endpoint",
+    "pipeline": "filter (WAREHOUSE_NAME = \"BDC_INTERACTIVE_WH\" or WAREHOUSE_NAME = \"BDC_STD_WH\")\nmake_col ENDPOINT:if(QUERY_TEXT ~ \".*coaching.*\", \"coaching\", if(QUERY_TEXT ~ \".*call.*\", \"calls\", if(QUERY_TEXT ~ \".*agent.*\", \"agents\", \"other\")))\ntimechart options(empty_bins:true), A_QUERY_ID_count:count(QUERY_ID), group_by(ENDPOINT)",
+    "input": [
+      {
+        "datasetId": "${query_dataset}",
+        "inputName": "snowflake/QUERY_HISTORY",
+        "inputRole": "Data"
+      }
+    ],
+    "layout": {
+      "type": "stage",
+      "label": "Queries per Endpoint Pattern",
+      "steps": [
+        {
+          "action": {
+            "type": "ExpressionBuilder",
+            "params": {
+              "expressionList": {
+                "groupBys": [
+                  {
+                    "id": "ENDPOINT",
+                    "column": {
+                      "columnId": "ENDPOINT",
+                      "columnType": "STRING",
+                      "inputSource": {
+                        "stageId": "stage-bdc-app-endpoint",
+                        "datasetId": "${query_dataset}"
+                      }
+                    }
+                  }
+                ],
+                "aggregations": [
+                  {
+                    "id": "A_QUERY_ID_count",
+                    "column": {
+                      "columnId": "A_QUERY_ID_count",
+                      "columnType": "FLOAT",
+                      "inputSource": {
+                        "stageId": "stage-bdc-app-endpoint",
+                        "datasetId": "${query_dataset}"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "managers": [
+        {
+          "type": "VegaChart",
+          "vegaVis": {
+            "x": "_c_valid_from",
+            "y": ["A_QUERY_ID_count"],
+            "type": "LineChart",
+            "color": "ENDPOINT"
+          }
+        }
+      ],
+      "viewModel": {
+        "stageTab": "vis",
+        "presetView": "none",
+        "rollupDisabled": false
+      }
+    }
+  },
+  {
+    "id": "stage-bdc-app-avg-duration",
+    "pipeline": "filter (WAREHOUSE_NAME = \"BDC_INTERACTIVE_WH\" or WAREHOUSE_NAME = \"BDC_STD_WH\")\nfilter EXECUTION_STATUS = \"SUCCESS\"\ntimechart options(empty_bins:true), A_TOTAL_ELAPSED_TIME_avg:avg(TOTAL_ELAPSED_TIME)",
+    "input": [
+      {
+        "datasetId": "${query_dataset}",
+        "inputName": "snowflake/QUERY_HISTORY",
+        "inputRole": "Data"
+      }
+    ],
+    "layout": {
+      "type": "stage",
+      "label": "Avg Query Duration Trend (ms)",
+      "steps": [
+        {
+          "action": {
+            "type": "ExpressionBuilder",
+            "params": {
+              "expressionList": {
+                "aggregations": [
+                  {
+                    "id": "A_TOTAL_ELAPSED_TIME_avg",
+                    "column": {
+                      "columnId": "A_TOTAL_ELAPSED_TIME_avg",
+                      "columnType": "FLOAT",
+                      "inputSource": {
+                        "stageId": "stage-bdc-app-avg-duration",
+                        "datasetId": "${query_dataset}"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "managers": [
+        {
+          "type": "VegaChart",
+          "vegaVis": {
+            "x": "_c_valid_from",
+            "y": ["A_TOTAL_ELAPSED_TIME_avg"],
+            "type": "LineChart"
+          }
+        }
+      ],
+      "viewModel": {
+        "stageTab": "vis",
+        "presetView": "none",
+        "rollupDisabled": false
+      }
+    }
+  },
+  {
+    "id": "stage-bdc-app-compile-exec",
+    "pipeline": "filter (WAREHOUSE_NAME = \"BDC_INTERACTIVE_WH\" or WAREHOUSE_NAME = \"BDC_STD_WH\")\nfilter EXECUTION_STATUS = \"SUCCESS\"\ntimechart options(empty_bins:true), A_COMPILATION_TIME_avg:avg(COMPILATION_TIME), A_EXECUTION_TIME_avg:avg(EXECUTION_TIME)",
+    "input": [
+      {
+        "datasetId": "${query_dataset}",
+        "inputName": "snowflake/QUERY_HISTORY",
+        "inputRole": "Data"
+      }
+    ],
+    "layout": {
+      "type": "stage",
+      "label": "Compilation vs Execution Time (ms)",
+      "steps": [
+        {
+          "action": {
+            "type": "ExpressionBuilder",
+            "params": {
+              "expressionList": {
+                "aggregations": [
+                  {
+                    "id": "A_COMPILATION_TIME_avg",
+                    "column": {
+                      "columnId": "A_COMPILATION_TIME_avg",
+                      "columnType": "FLOAT",
+                      "inputSource": {
+                        "stageId": "stage-bdc-app-compile-exec",
+                        "datasetId": "${query_dataset}"
+                      }
+                    }
+                  },
+                  {
+                    "id": "A_EXECUTION_TIME_avg",
+                    "column": {
+                      "columnId": "A_EXECUTION_TIME_avg",
+                      "columnType": "FLOAT",
+                      "inputSource": {
+                        "stageId": "stage-bdc-app-compile-exec",
+                        "datasetId": "${query_dataset}"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "managers": [
+        {
+          "type": "VegaChart",
+          "vegaVis": {
+            "x": "_c_valid_from",
+            "y": ["A_COMPILATION_TIME_avg", "A_EXECUTION_TIME_avg"],
+            "type": "LineChart"
+          }
+        }
+      ],
+      "viewModel": {
+        "stageTab": "vis",
+        "presetView": "none",
+        "rollupDisabled": false
+      }
+    }
+  }
+]

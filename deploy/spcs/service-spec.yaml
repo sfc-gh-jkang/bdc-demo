@@ -1,0 +1,69 @@
+# service-spec.yaml — SPCS service specification (reference only)
+#
+# This file is NOT used directly by deploy-spcs.sh (the spec is generated
+# inline with unique image tags). It serves as a human-readable reference.
+#
+# Ports must match the Dockerfiles:
+#   - frontend: 5173
+#   - backend:  8081
+#   - router:   8000 (nginx reverse proxy)
+#
+# Router env vars must match nginx.conf.template:
+#   - FE_SERVER: localhost:5173
+#   - BE_SERVER: localhost:8081
+#
+# Compute pool: CPU_X64_S (XS is too small for 3 containers)
+
+spec:
+  containers:
+    - name: router
+      image: /BDC_DEMO/SPCS/BDC_IMAGES/router:<TAG>
+      resources:
+        requests:
+          cpu: 0.2
+          memory: 256M
+        limits:
+          cpu: 1
+          memory: 512M
+      env:
+        FE_SERVER: localhost:5173
+        BE_SERVER: localhost:8081
+      readinessProbe:
+        port: 8000
+        path: /router-health
+
+    - name: backend
+      image: /BDC_DEMO/SPCS/BDC_IMAGES/backend:<TAG>
+      env:
+        SNOWFLAKE_DATABASE: BDC_DEMO
+        SNOWFLAKE_WAREHOUSE: BDC_STD_WH
+        SNOWFLAKE_STD_WAREHOUSE: BDC_STD_WH
+        SNOWFLAKE_INTERACTIVE_WAREHOUSE: BDC_INTERACTIVE_WH
+      resources:
+        requests:
+          cpu: 0.5
+          memory: 512M
+        limits:
+          cpu: 1
+          memory: 2G
+      readinessProbe:
+        port: 8081
+        path: /health
+
+    - name: frontend
+      image: /BDC_DEMO/SPCS/BDC_IMAGES/frontend:<TAG>
+      resources:
+        requests:
+          cpu: 0.2
+          memory: 256M
+        limits:
+          cpu: 1
+          memory: 512M
+      readinessProbe:
+        port: 5173
+        path: /
+
+  endpoints:
+    - name: main
+      port: 8000
+      public: true

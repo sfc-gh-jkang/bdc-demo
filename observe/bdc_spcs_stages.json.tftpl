@@ -1,0 +1,192 @@
+[
+  {
+    "id": "stage-bdc-spcs-credits-pool",
+    "pipeline": "filter SERVICE_NAME = \"${service_name}\"\ntimechart options(empty_bins:true), A_CREDITS_USED_sum:sum(CREDITS_USED)/to_minutes(bin_size()), group_by(COMPUTE_POOL_NAME)",
+    "input": [
+      {
+        "datasetId": "${spcs_dataset}",
+        "inputName": "snowflake/SNOWPARK_CONTAINER_SERVICES_HISTORY",
+        "inputRole": "Data"
+      }
+    ],
+    "layout": {
+      "type": "stage",
+      "label": "Credits/Hour by Compute Pool",
+      "steps": [
+        {
+          "action": {
+            "type": "ExpressionBuilder",
+            "params": {
+              "expressionList": {
+                "groupBys": [
+                  {
+                    "id": "COMPUTE_POOL_NAME",
+                    "column": {
+                      "columnId": "COMPUTE_POOL_NAME",
+                      "columnType": "STRING",
+                      "inputSource": {
+                        "stageId": "stage-bdc-spcs-credits-pool",
+                        "datasetId": "${spcs_dataset}"
+                      }
+                    }
+                  }
+                ],
+                "aggregations": [
+                  {
+                    "id": "A_CREDITS_USED_sum",
+                    "column": {
+                      "columnId": "A_CREDITS_USED_sum",
+                      "columnType": "FLOAT",
+                      "inputSource": {
+                        "stageId": "stage-bdc-spcs-credits-pool",
+                        "datasetId": "${spcs_dataset}"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "managers": [
+        {
+          "type": "VegaChart",
+          "vegaVis": {
+            "x": "_c_valid_from",
+            "y": ["A_CREDITS_USED_sum"],
+            "type": "LineChart",
+            "color": "COMPUTE_POOL_NAME"
+          }
+        }
+      ],
+      "viewModel": {
+        "stageTab": "vis",
+        "presetView": "none",
+        "rollupDisabled": false
+      }
+    }
+  },
+  {
+    "id": "stage-bdc-spcs-credits-total",
+    "pipeline": "filter SERVICE_NAME = \"${service_name}\"\ntimechart options(empty_bins:true), A_CREDITS_USED_sum:sum(CREDITS_USED)/to_minutes(bin_size())",
+    "input": [
+      {
+        "datasetId": "${spcs_dataset}",
+        "inputName": "snowflake/SNOWPARK_CONTAINER_SERVICES_HISTORY",
+        "inputRole": "Data"
+      }
+    ],
+    "layout": {
+      "type": "stage",
+      "label": "Total Credits/Hour",
+      "steps": [
+        {
+          "action": {
+            "type": "ExpressionBuilder",
+            "params": {
+              "expressionList": {
+                "aggregations": [
+                  {
+                    "id": "A_CREDITS_USED_sum",
+                    "column": {
+                      "columnId": "A_CREDITS_USED_sum",
+                      "columnType": "FLOAT",
+                      "inputSource": {
+                        "stageId": "stage-bdc-spcs-credits-total",
+                        "datasetId": "${spcs_dataset}"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "managers": [
+        {
+          "type": "VegaChart",
+          "vegaVis": {
+            "x": "_c_valid_from",
+            "y": ["A_CREDITS_USED_sum"],
+            "type": "LineChart"
+          }
+        }
+      ],
+      "viewModel": {
+        "stageTab": "vis",
+        "presetView": "none",
+        "rollupDisabled": false
+      }
+    }
+  },
+  {
+    "id": "stage-bdc-spcs-instance-status",
+    "pipeline": "filter SERVICE_NAME = \"${service_name}\"\ntimechart options(empty_bins:true), A_INSTANCE_ID_count:count(INSTANCE_ID), group_by(STATUS)",
+    "input": [
+      {
+        "datasetId": "${spcs_dataset}",
+        "inputName": "snowflake/SNOWPARK_CONTAINER_SERVICES_HISTORY",
+        "inputRole": "Data"
+      }
+    ],
+    "layout": {
+      "type": "stage",
+      "label": "Container Instance Count by Status",
+      "steps": [
+        {
+          "action": {
+            "type": "ExpressionBuilder",
+            "params": {
+              "expressionList": {
+                "groupBys": [
+                  {
+                    "id": "STATUS",
+                    "column": {
+                      "columnId": "STATUS",
+                      "columnType": "STRING",
+                      "inputSource": {
+                        "stageId": "stage-bdc-spcs-instance-status",
+                        "datasetId": "${spcs_dataset}"
+                      }
+                    }
+                  }
+                ],
+                "aggregations": [
+                  {
+                    "id": "A_INSTANCE_ID_count",
+                    "column": {
+                      "columnId": "A_INSTANCE_ID_count",
+                      "columnType": "FLOAT",
+                      "inputSource": {
+                        "stageId": "stage-bdc-spcs-instance-status",
+                        "datasetId": "${spcs_dataset}"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "managers": [
+        {
+          "type": "VegaChart",
+          "vegaVis": {
+            "x": "_c_valid_from",
+            "y": ["A_INSTANCE_ID_count"],
+            "type": "LineChart",
+            "color": "STATUS"
+          }
+        }
+      ],
+      "viewModel": {
+        "stageTab": "vis",
+        "presetView": "none",
+        "rollupDisabled": false
+      }
+    }
+  }
+]

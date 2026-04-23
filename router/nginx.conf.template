@@ -1,0 +1,29 @@
+server {
+    listen 8000;
+
+    location /router-health {
+        return 200 "ok";
+        add_header Content-Type text/plain;
+    }
+
+    location /api/ {
+        proxy_pass http://${BE_SERVER}/api/;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $host;
+        proxy_read_timeout 300s;
+        proxy_connect_timeout 10s;
+        proxy_buffering off;
+        proxy_cache off;
+        chunked_transfer_encoding off;
+    }
+
+    location / {
+        proxy_pass http://${FE_SERVER}/;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $host;
+        proxy_read_timeout 60s;
+        proxy_connect_timeout 10s;
+    }
+}

@@ -1,0 +1,314 @@
+name: BDC_ANALYTICS
+description: BDC call center analytics for natural-language queries via Cortex Analyst. Covers call details, agent performance, and dealer-level dashboard metrics for automotive BDC operations.
+
+tables:
+  - name: call_details
+    description: Individual call records with agent scores, sentiment, and disposition data
+    base_table:
+      database: BDC_DEMO
+      schema: COACHING
+      table: CALL_DETAILS
+    primary_key:
+      columns: [CALL_ID]
+    dimensions:
+      - name: call_id
+        description: Unique call identifier
+        data_type: TEXT
+        expr: CALL_ID
+      - name: disposition
+        description: "Call outcome: appointment_set, voicemail, no_answer, callback_requested, information_provided, complaint, wrong_number, do_not_call"
+        synonyms: [outcome, result, status]
+        data_type: TEXT
+        expr: DISPOSITION
+        sample_values: [appointment_set, voicemail, no_answer, callback_requested, information_provided]
+      - name: direction
+        description: "Call direction: inbound or outbound"
+        data_type: TEXT
+        expr: DIRECTION
+        sample_values: [inbound, outbound]
+      - name: agent_id
+        description: Agent identifier
+        data_type: TEXT
+        expr: AGENT_ID
+      - name: agent_name
+        description: Full name of the BDC agent
+        synonyms: [agent, rep, representative]
+        data_type: TEXT
+        expr: AGENT_NAME
+      - name: skill_tier
+        description: "Agent skill tier: top, mid, or bottom"
+        synonyms: [tier, level, performance tier]
+        data_type: TEXT
+        expr: SKILL_TIER
+        sample_values: [top, mid, bottom]
+      - name: customer_id
+        description: Customer identifier
+        data_type: TEXT
+        expr: CUSTOMER_ID
+      - name: customer_name
+        description: Full name of the customer
+        data_type: TEXT
+        expr: CUSTOMER_NAME
+      - name: dealer_id
+        description: Dealer identifier
+        data_type: TEXT
+        expr: DEALER_ID
+      - name: dealer_name
+        description: Name of the car dealership
+        synonyms: [dealership, store]
+        data_type: TEXT
+        expr: DEALER_NAME
+      - name: campaign_id
+        description: Marketing campaign identifier
+        data_type: TEXT
+        expr: CAMPAIGN_ID
+      - name: sentiment_label
+        description: "Sentiment classification: positive, neutral, or negative"
+        synonyms: [sentiment, mood]
+        data_type: TEXT
+        expr: SENTIMENT_LABEL
+        sample_values: [positive, neutral, negative]
+      - name: call_summary
+        description: AI-generated summary of the call
+        data_type: TEXT
+        expr: CALL_SUMMARY
+      - name: disposition_class
+        description: AI-classified disposition category
+        data_type: TEXT
+        expr: DISPOSITION_CLASS
+    time_dimensions:
+      - name: call_date
+        description: Date of the call
+        synonyms: [date, day]
+        data_type: DATE
+        expr: CALL_DATE
+      - name: call_datetime
+        description: Full timestamp of the call
+        data_type: TIMESTAMP
+        expr: CALL_DATETIME
+    facts:
+      - name: duration_seconds
+        description: Call duration in seconds
+        synonyms: [duration, call length, handle time]
+        data_type: NUMBER
+        expr: DURATION_SECONDS
+      - name: sentiment_score
+        description: AI-derived sentiment score from 0.0 (negative) to 1.0 (positive)
+        data_type: NUMBER
+        expr: SENTIMENT_SCORE
+      - name: greeting_score
+        description: Score 0-100 for greeting quality
+        data_type: NUMBER
+        expr: GREETING
+      - name: active_listening_score
+        description: Score 0-100 for active listening
+        data_type: NUMBER
+        expr: ACTIVE_LISTENING
+      - name: objection_handling_score
+        description: Score 0-100 for objection handling
+        data_type: NUMBER
+        expr: OBJECTION_HANDLING
+      - name: product_knowledge_score
+        description: Score 0-100 for product knowledge
+        data_type: NUMBER
+        expr: PRODUCT_KNOWLEDGE
+      - name: closing_score
+        description: Score 0-100 for closing technique
+        data_type: NUMBER
+        expr: CLOSING
+      - name: professionalism_score
+        description: Score 0-100 for professionalism
+        data_type: NUMBER
+        expr: PROFESSIONALISM
+      - name: overall_score
+        description: Composite coaching score 0-100
+        synonyms: [score, call score, quality score]
+        data_type: NUMBER
+        expr: OVERALL_SCORE
+      - name: word_count
+        description: Number of words in call transcript
+        data_type: NUMBER
+        expr: WORD_COUNT
+    metrics:
+      - name: total_calls
+        description: Total number of calls
+        expr: COUNT(*)
+      - name: avg_call_score
+        description: Average overall coaching score
+        synonyms: [average score]
+        expr: AVG(OVERALL_SCORE)
+      - name: avg_duration
+        description: Average call duration in seconds
+        expr: AVG(DURATION_SECONDS)
+      - name: appointment_count
+        description: Number of calls resulting in appointments
+        synonyms: [appointments, appointments set]
+        expr: "COUNT_IF(DISPOSITION = 'appointment_set')"
+      - name: appointment_rate
+        description: Percentage of calls that result in appointments
+        synonyms: [conversion rate, set rate]
+        expr: "COUNT_IF(DISPOSITION = 'appointment_set') * 100.0 / NULLIF(COUNT(*), 0)"
+      - name: avg_sentiment
+        description: Average sentiment score across calls
+        expr: AVG(SENTIMENT_SCORE)
+    filters:
+      - name: appointments_only
+        description: Only calls that resulted in appointments
+        synonyms: [booked, set appointments]
+        expr: "DISPOSITION = 'appointment_set'"
+      - name: outbound_only
+        description: Only outbound calls
+        expr: "DIRECTION = 'outbound'"
+      - name: inbound_only
+        description: Only inbound calls
+        expr: "DIRECTION = 'inbound'"
+
+  - name: agent_leaderboard
+    description: Agent-level performance summary with ranking
+    base_table:
+      database: BDC_DEMO
+      schema: COACHING
+      table: AGENT_LEADERBOARD
+    primary_key:
+      columns: [AGENT_ID]
+    dimensions:
+      - name: agent_id
+        description: Agent identifier
+        data_type: TEXT
+        expr: AGENT_ID
+      - name: agent_name
+        description: Full name of the BDC agent
+        synonyms: [agent, rep]
+        data_type: TEXT
+        expr: AGENT_NAME
+      - name: skill_tier
+        description: "Agent performance tier: top, mid, or bottom"
+        data_type: TEXT
+        expr: SKILL_TIER
+        sample_values: [top, mid, bottom]
+      - name: dealer_name
+        description: Dealership name
+        data_type: TEXT
+        expr: DEALER_NAME
+      - name: dealer_id
+        description: Dealer identifier
+        data_type: TEXT
+        expr: DEALER_ID
+    time_dimensions:
+      - name: hire_date
+        description: Date the agent was hired
+        data_type: DATE
+        expr: HIRE_DATE
+    facts:
+      - name: total_calls
+        description: Total number of calls made by the agent
+        data_type: NUMBER
+        expr: TOTAL_CALLS
+      - name: appointments_set
+        description: Total appointments booked by the agent
+        synonyms: [appointments, bookings]
+        data_type: NUMBER
+        expr: APPOINTMENTS_SET
+      - name: avg_score
+        description: Average coaching score across all calls
+        data_type: NUMBER
+        expr: AVG_SCORE
+      - name: avg_sentiment
+        description: Average sentiment score across all calls
+        data_type: NUMBER
+        expr: AVG_SENTIMENT
+      - name: avg_duration
+        description: Average call duration in seconds
+        data_type: NUMBER
+        expr: AVG_DURATION
+      - name: composite_score
+        description: Weighted composite performance score
+        synonyms: [performance score, overall performance]
+        data_type: NUMBER
+        expr: COMPOSITE_SCORE
+      - name: rank
+        description: Agent rank by composite score (1 = best)
+        synonyms: [ranking, position]
+        data_type: NUMBER
+        expr: RANK
+
+  - name: dashboard_metrics
+    description: Dealer-level aggregated dashboard metrics
+    base_table:
+      database: BDC_DEMO
+      schema: COACHING
+      table: DASHBOARD_METRICS
+    primary_key:
+      columns: [DEALER_ID]
+    dimensions:
+      - name: dealer_id
+        description: Dealer identifier
+        data_type: TEXT
+        expr: DEALER_ID
+      - name: dealer_name
+        description: Dealership name
+        synonyms: [dealership, store]
+        data_type: TEXT
+        expr: DEALER_NAME
+      - name: brand
+        description: "Car brand: Toyota, Honda, Ford, Chevrolet, or BMW"
+        synonyms: [make, manufacturer]
+        data_type: TEXT
+        expr: BRAND
+        sample_values: [Toyota, Honda, Ford, Chevrolet, BMW]
+    facts:
+      - name: total_calls
+        description: Total calls for this dealer
+        data_type: NUMBER
+        expr: TOTAL_CALLS
+      - name: active_agents
+        description: Number of active BDC agents
+        data_type: NUMBER
+        expr: ACTIVE_AGENTS
+      - name: avg_call_duration
+        description: Average call duration in seconds
+        data_type: NUMBER
+        expr: AVG_CALL_DURATION
+      - name: appointments_set
+        description: Total appointments booked
+        data_type: NUMBER
+        expr: APPOINTMENTS_SET
+      - name: conversion_rate
+        description: Ratio of appointments to total calls
+        synonyms: [appointment rate, set rate]
+        data_type: NUMBER
+        expr: CONVERSION_RATE
+      - name: avg_sentiment
+        description: Average sentiment score
+        data_type: NUMBER
+        expr: AVG_SENTIMENT
+      - name: avg_call_score
+        description: Average coaching score
+        data_type: NUMBER
+        expr: AVG_CALL_SCORE
+      - name: unique_customers
+        description: Number of unique customers contacted
+        data_type: NUMBER
+        expr: UNIQUE_CUSTOMERS
+      - name: total_talk_time_seconds
+        description: Total talk time in seconds
+        data_type: NUMBER
+        expr: TOTAL_TALK_TIME_SECONDS
+
+relationships:
+  - name: call_to_agent
+    left_table: call_details
+    right_table: agent_leaderboard
+    join_type: left_outer
+    relationship_type: many_to_one
+    relationship_columns:
+      - left_column: AGENT_ID
+        right_column: AGENT_ID
+  - name: call_to_dealer
+    left_table: call_details
+    right_table: dashboard_metrics
+    join_type: left_outer
+    relationship_type: many_to_one
+    relationship_columns:
+      - left_column: DEALER_ID
+        right_column: DEALER_ID

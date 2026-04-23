@@ -1,0 +1,26 @@
+CAMPAIGN_ID,DEALER_ID,CAMPAIGN_NAME,CAMPAIGN_TYPE,START_DATE,END_DATE,TARGET_COUNT,IS_ACTIVE,CREATED_AT
+CMP001,DLR001,Toyota Service Recall - Jan 2024,service_recall,2023-12-31,2024-01-30,59,True,2023-12-26
+CMP002,DLR001,Toyota Lease Maturity - Jan 2024,lease_maturity,2023-12-28,2024-01-27,295,True,2023-12-23
+CMP003,DLR001,Toyota Csi Survey - Jan 2024,csi_survey,2023-12-17,2024-01-16,246,True,2023-12-12
+CMP004,DLR001,Toyota Conquest - Jan 2024,conquest,2023-12-17,2024-01-16,116,True,2023-12-12
+CMP005,DLR001,Toyota Retention - Jan 2024,retention,2023-12-30,2024-01-29,264,True,2023-12-25
+CMP006,DLR002,Honda Service Recall - Jan 2024,service_recall,2023-12-23,2024-01-22,274,True,2023-12-18
+CMP007,DLR002,Honda Lease Maturity - Jan 2024,lease_maturity,2024-01-01,2024-01-31,127,True,2023-12-27
+CMP008,DLR002,Honda Csi Survey - Jan 2024,csi_survey,2023-12-17,2024-01-16,279,True,2023-12-12
+CMP009,DLR002,Honda Conquest - Jan 2024,conquest,2023-12-17,2024-01-16,55,True,2023-12-12
+CMP010,DLR002,Honda Retention - Jan 2024,retention,2023-12-25,2024-01-24,207,True,2023-12-20
+CMP011,DLR003,Ford Service Recall - Jan 2024,service_recall,2023-12-27,2024-01-26,264,True,2023-12-22
+CMP012,DLR003,Ford Lease Maturity - Jan 2024,lease_maturity,2023-12-22,2024-01-21,70,True,2023-12-17
+CMP013,DLR003,Ford Csi Survey - Jan 2024,csi_survey,2023-12-20,2024-01-19,223,True,2023-12-15
+CMP014,DLR003,Ford Conquest - Jan 2024,conquest,2023-12-18,2024-01-17,282,True,2023-12-13
+CMP015,DLR003,Ford Retention - Jan 2024,retention,2023-12-26,2024-01-25,59,True,2023-12-21
+CMP016,DLR004,Chevrolet Service Recall - Jan 2024,service_recall,2023-12-26,2024-01-25,163,True,2023-12-21
+CMP017,DLR004,Chevrolet Lease Maturity - Jan 2024,lease_maturity,2023-12-24,2024-01-23,196,True,2023-12-19
+CMP018,DLR004,Chevrolet Csi Survey - Jan 2024,csi_survey,2023-12-29,2024-01-28,267,True,2023-12-24
+CMP019,DLR004,Chevrolet Conquest - Jan 2024,conquest,2024-01-01,2024-01-31,225,True,2023-12-27
+CMP020,DLR004,Chevrolet Retention - Jan 2024,retention,2023-12-19,2024-01-18,59,True,2023-12-14
+CMP021,DLR005,BMW Service Recall - Jan 2024,service_recall,2023-12-25,2024-01-24,123,True,2023-12-20
+CMP022,DLR005,BMW Lease Maturity - Jan 2024,lease_maturity,2023-12-21,2024-01-20,242,True,2023-12-16
+CMP023,DLR005,BMW Csi Survey - Jan 2024,csi_survey,2023-12-20,2024-01-19,132,True,2023-12-15
+CMP024,DLR005,BMW Conquest - Jan 2024,conquest,2023-12-26,2024-01-25,300,True,2023-12-21
+CMP025,DLR005,BMW Retention - Jan 2024,retention,2023-12-26,2024-01-25,247,True,2023-12-21
