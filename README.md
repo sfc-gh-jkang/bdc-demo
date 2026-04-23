@@ -2,7 +2,7 @@
 
 [![Powered by Snowflake](https://img.shields.io/badge/Powered%20by-Snowflake-29B5E8?logo=snowflake&logoColor=white)](https://www.snowflake.com)
 
-> **TL;DR for SEs** — End-to-end Cortex Agent + SPCS demo replacing OpenAI + Pinecone + Vercel + a scheduler with one Snowflake account. 15K synthetic BDC call transcripts, Cortex Search RAG, streaming claude-4-sonnet coaching, Iceberg + DTs + Interactive Tables under the hood. One-command deploy (~15 min), teardown included. See [Slack blurb](#slack-blurb) to share internally.
+> **TL;DR for SEs** — End-to-end Cortex Agent + SPCS demo. An auto-retail BDC call-coaching app (same category as Gong / CallMiner / Observe.AI / CallRevu) running entirely inside the customer's own Snowflake account — no call data leaves, no vendor sees transcripts. 15K synthetic transcripts, Cortex Search RAG, streaming claude-4-sonnet coaching, Iceberg + DTs + Interactive Tables under the hood. One-command deploy (~15 min), teardown included. See [Slack blurb](#slack-blurb) to share internally.
 
 <details>
 <summary id="slack-blurb"><strong>Slack blurb — copy/paste to drive internal traffic</strong></summary>
@@ -10,7 +10,7 @@
 ```
 :snowflake: New demo: *BDC Agent Coaching Dashboard* — end-to-end Snowflake-native AI app.
 
-What it is: A call-center agent coaching app (automotive BDC as the reference scenario, pattern applies to any contact center) that replaces OpenAI + Pinecone + Vercel + a scheduler with one Snowflake account.
+What it is: An auto-retail BDC call-coaching app — the same category as Gong, CallMiner, Observe.AI, or CallRevu — but the whole thing runs inside the customer's own Snowflake account. No call data leaves, no vendor sees transcripts, no separate data warehouse to sync.
 
 Under the hood:
 • Cortex Agent (claude-4-sonnet) + Cortex Search RAG over 15K synthetic call transcripts
@@ -19,9 +19,9 @@ Under the hood:
 • DCM-managed schemas, daily task generates new calls
 
 Deploy: `bash deploy/spcs/deploy-spcs.sh` (~15 min, ~2-3 credits). Teardown included.
-Demo time: 20-25 min. Great fit for automotive, contact center, customer success, collections, inside sales — any agent-coaching conversation.
+Demo time: 20-25 min. Great fit for auto dealer groups, BDCs, and any contact-center/agent-coaching convo.
 
-Repo: https://github.com/sfc-gh-jkang/bdc-demo  (pending public-release approval — DM me for access or a walkthrough)
+Repo: https://github.com/sfc-gh-jkang/bdc-demo
 ```
 
 </details>
