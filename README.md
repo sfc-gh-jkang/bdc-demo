@@ -81,6 +81,22 @@ If you're responsible for contact center QA and the numbers above look familiar,
 
 **TL;DR** — A production-style AI coaching dashboard for automotive BDC agents, built entirely on Snowflake.
 
+### Screenshots
+
+| Dashboard | Leaderboard |
+|---|---|
+| ![Dashboard](docs/screenshots/01-dashboard.png) | ![Leaderboard](docs/screenshots/02-leaderboard.png) |
+
+| Pipeline | Call Log |
+|---|---|
+| ![Pipeline](docs/screenshots/03-pipeline.png) | ![Call Log](docs/screenshots/04-calls-list.png) |
+
+| Call Detail | Agent Detail |
+|---|---|
+| ![Call Detail](docs/screenshots/05-call-detail.png) | ![Agent Detail](docs/screenshots/06-agent-detail.png) |
+
+![Analyst](docs/screenshots/07-analyst.png)
+
 ### The Business Problem
 
 Automotive BDC (Business Development Center) managers oversee dozens of agents making thousands of calls per month. Listening to every call is impossible, and traditional QA sampling misses patterns. Managers need a way to surface coaching insights automatically — grounded in actual call data, not generic advice.
