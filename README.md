@@ -1,6 +1,8 @@
 # BDC Agent Coaching Dashboard
 
 [![Powered by Snowflake](https://img.shields.io/badge/Powered%20by-Snowflake-29B5E8?logo=snowflake&logoColor=white)](https://www.snowflake.com)
+[![Frontend CI](https://github.com/sfc-gh-jkang/bdc-demo/actions/workflows/frontend-ci.yml/badge.svg)](https://github.com/sfc-gh-jkang/bdc-demo/actions/workflows/frontend-ci.yml)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 > **TL;DR for SEs** — End-to-end Cortex Agent + SPCS demo. An auto-retail BDC call-coaching app (same category as Gong / CallMiner / Observe.AI / CallRevu) running entirely inside the customer's own Snowflake account — no call data leaves, no vendor sees transcripts. 15K synthetic transcripts, Cortex Search RAG, streaming claude-4-sonnet coaching, Iceberg + DTs + Interactive Tables under the hood. One-command deploy (~15 min), teardown included.
 
@@ -61,32 +63,43 @@ React 19 · TailwindCSS 4 · Vite · FastAPI · Snowflake Cortex Agent · Cortex
 
 ## Architecture
 
-```
-Browser
-  |
-  v
-SPCS Service (Snowpark Container Services)
-  ├── router (nginx) :8000
-  │     ├─ /api/*  → backend :8081
-  │     └─ /*      → frontend :5173
-  ├── frontend (React + Vite) :5173
-  └── backend (FastAPI + Python) :8081
-        ├── Snowflake Connector (SQL queries)
-        └── Cortex Agent REST API → AI summaries + interactive chat (SSE streaming)
+```mermaid
+flowchart LR
+    User([Browser<br/>OAuth SSO])
 
-Snowflake Objects
-  ├── RAW schema          – 16 source tables + 6 Snowflake-managed Iceberg tables
-  ├── ANALYTICS schema    – Dynamic Tables (leaderboard, call details, dashboard metrics)
-  ├── COACHING schema     – Interactive Tables, Cortex Search Service, Cortex Agent
-  └── SPCS schema         – Compute pool, service, image repository
+    subgraph SPCS["SPCS Service"]
+        Router[nginx router<br/>:8000]
+        Frontend[React + Vite<br/>:5173]
+        Backend[FastAPI + Python<br/>:8081]
+        Router -->|/*| Frontend
+        Router -->|/api/*| Backend
+    end
 
-Data Flow
-  Parquet seed → RAW tables → Iceberg tables → Dynamic Tables → Interactive Tables
-                                  ↓                                    ↓
-                          Cortex Search (RAG)              Sub-second dashboard queries
-                                  ↓
-                          Cortex Agent (coaching)
+    subgraph Snowflake["Snowflake Account"]
+        RAW[("RAW<br/>16 tables +<br/>6 Iceberg tables")]
+        ANALYTICS[("ANALYTICS<br/>Dynamic Tables")]
+        COACHING[("COACHING<br/>Interactive Tables")]
+        Search{{"Cortex Search<br/>RAG index"}}
+        Agent{{"Cortex Agent<br/>claude-4-sonnet"}}
+
+        RAW --> ANALYTICS
+        RAW --> Search
+        ANALYTICS --> COACHING
+        Search --> Agent
+    end
+
+    User --> Router
+    Backend -->|SQL| COACHING
+    Backend -->|SQL| ANALYTICS
+    Backend -->|REST + SSE| Agent
+
+    classDef snowflake fill:#29B5E8,stroke:#0B6E9E,color:#fff
+    classDef spcs fill:#1e293b,stroke:#475569,color:#fff
+    class RAW,ANALYTICS,COACHING,Search,Agent snowflake
+    class Router,Frontend,Backend spcs
 ```
+
+**Data Flow:** Parquet seed → RAW tables → Iceberg tables → Dynamic Tables → Interactive Tables → (Cortex Search RAG + sub-second dashboard queries) → Cortex Agent coaching.
 
 ## Key Features
 
