@@ -67,14 +67,16 @@ CREATE OR REPLACE CORTEX SEARCH SERVICE BDC_DEMO.COACHING.CALL_TRANSCRIPT_SEARCH
 -- =============================================================================
 -- 2. CORTEX AGENT (coaching assistant)
 -- =============================================================================
--- Uses claude-4-sonnet for orchestration with a cortex_search tool.
--- NOTE: Cortex Agents only support Claude models (not llama/mistral).
+-- Uses 'auto' for orchestration — Snowflake auto-selects a currently-allowed
+-- Claude/GPT/Gemini model. Hardcoding a specific name (e.g. claude-4-sonnet)
+-- causes a 400 'not an allowed model for Agent requests' error when Snowflake
+-- deprecates that model from the agent allowlist (verified 2026-05-22).
 
 CREATE OR REPLACE AGENT BDC_DEMO.COACHING.COACHING_AGENT
   COMMENT = 'AI coaching assistant — analyzes BDC call performance via RAG'
 FROM SPECIFICATION $$
 models:
-  orchestration: claude-4-sonnet
+  orchestration: auto
 orchestration:
   budget:
     seconds: 60

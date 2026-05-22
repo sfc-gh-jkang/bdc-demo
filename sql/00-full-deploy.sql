@@ -485,12 +485,15 @@ CREATE OR REPLACE CORTEX SEARCH SERVICE BDC_DEMO.COACHING.CALL_TRANSCRIPT_SEARCH
 -- =============================================================================
 -- 9. CORTEX AGENT
 -- =============================================================================
+-- 'auto' orchestration — Snowflake auto-picks a currently-allowed model.
+-- Hardcoding (e.g. claude-4-sonnet) breaks when Snowflake deprecates a model
+-- from the agent allowlist (verified 2026-05-22).
 
 CREATE OR REPLACE AGENT BDC_DEMO.COACHING.COACHING_AGENT
   COMMENT = 'AI coaching assistant — analyzes BDC call performance via RAG'
 FROM SPECIFICATION $$
 models:
-  orchestration: claude-4-sonnet
+  orchestration: auto
 orchestration:
   budget:
     seconds: 60
